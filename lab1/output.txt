@@ -1,0 +1,4 @@
+Rectangle: P = 90, S = 500
+Rectangle: P = 200, S = 2400
+Circle: P = 314.159, S = 7853.98
+Triangle: P = 223.246, S = 1800
