@@ -1,0 +1,4 @@
+Rectangle: P = 160, S = 1200
+Rectangle: P = 440, S = 12000
+Circle: P = 314.159, S = 7853.98
+Circle: P = 224.924, S = 2200
