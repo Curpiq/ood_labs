@@ -7,13 +7,6 @@
 using namespace sf;
 using namespace std;
 
-//struct Args
-//{
-//    string input;
-//    string output;
-//};
-
-
 int main(int argc, char* argv[])
 {
     string input = argv[1];
@@ -23,12 +16,12 @@ int main(int argc, char* argv[])
     ofstream outputFile;
     outputFile.open(output);
 
-    CShapeHandler shapeHandler(inputFile, outputFile);
+    auto& instance = CShapeHandler::GetInstance(inputFile, outputFile);
 
     while (!inputFile.eof() && !inputFile.fail())
     {
-        shapeHandler.HandleCommand();
+        instance.HandleCommand();
     }
-    shapeHandler.DisplayShapes();
-	return 0;
+    instance.DisplayShapes();
+    return 0;
 }

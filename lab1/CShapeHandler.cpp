@@ -13,6 +13,12 @@ CShapeHandler::CShapeHandler(istream& input, ostream& output)
 		})
 {
 }
+
+CShapeHandler& CShapeHandler::GetInstance(std::istream& input, std::ostream& output)
+{
+	static CShapeHandler instance(input, output);
+	return instance;
+}
 void CShapeHandler::HandleCommand()
 {
 	string args;
@@ -27,94 +33,118 @@ void CShapeHandler::HandleCommand()
 	}
 }
 
-void CShapeHandler::GetRectangleData(istream& args)
+void CShapeHandler::GetRectangleData(istream& argsLine)
 {
-	string command;
-	vector<string> params, p1, p2;
-	getline(args, command);
+	string args;
+	vector<string> points, p1, p2;
+	getline(argsLine, args);
 
-	boost::algorithm::trim(command);
-	boost::split(params, command, boost::algorithm::is_any_of(" "));
+	//убираем лишние пробелы и сплитим по оставшимся
+	boost::algorithm::trim(args);
+	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	boost::split(p1, params[0], boost::algorithm::is_any_of(","));
-	boost::split(p2, params[1], boost::algorithm::is_any_of(","));
+	//сплитим по запятой, создаем векторы p1, p2 для точек
+	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
+	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
 
-	Vector2f point1 = { stof(p1[0]), stof(p1[1]) };
-	Vector2f point2 = { stof(p2[0]), stof(p2[1]) };
+	//приводим к векторам из SFML
+	sf::Vector2f leftTop = { stof(p1[0]), stof(p1[1]) };
+	sf::Vector2f rightBottom = { stof(p2[0]), stof(p2[1]) };
 
-	float width = sqrt(pow((point2.x - point1.x), 2));
-	float height = sqrt(pow((point2.y - point1.y), 2));
+	//рассчитываем ширину и высоту для создания объекта класса RectangleShape из SFML
+	float width = sqrt(pow((rightBottom.x - leftTop.x), 2));
+	float height = sqrt(pow((leftTop.y - rightBottom.y), 2));
 
-	auto shape_ptr = make_shared<RectangleShape>(Vector2f(width, height));
-	m_shapesList.push_back(shape_ptr);
+	//создаем фигуру SFML, устанавливаем позицию
+	sf::RectangleShape rectangle = sf::RectangleShape(sf::Vector2f(width, height));
+	rectangle.setPosition(leftTop);
 
-	CRectange rectangle(*shape_ptr);
-	m_output << "Rectangle: P = " << rectangle.GetPerimeter() << ", S = " << rectangle.GetArea() << endl;
+	//оборачиваем в CRectangle и заносим в массив фигур
+	shared_ptr<CRectange> rect_ptr = make_shared<CRectange>(move(rectangle));
+	m_shapesList.push_back(rect_ptr);
+
+	//выводим в output информацию о площади и периметре
+	m_output << "Rectangle: P = " << rect_ptr->GetPerimeter() << ", S = " << rect_ptr->GetArea() << endl;
 }
 
-void CShapeHandler::GetCircleData(istream& args)
+void CShapeHandler::GetCircleData(istream& argsLine)
 {
-	string command;
+	string args;
 	vector<string> params, center;
-	getline(args, command);
-	boost::algorithm::trim(command);
+	getline(argsLine, args);
 
-	boost::split(params, command, boost::algorithm::is_any_of(" "));
+	//убираем лишние пробелы и сплитим по оставшимся
+	boost::algorithm::trim(args);
+	boost::split(params, args, boost::algorithm::is_any_of(" "));
+
+	//сплитим по запятой, создаем вектор center (точка центра), заводим переменную радиуса
 	boost::split(center, params[0], boost::algorithm::is_any_of(","));
-	Vector2f pointCenter = { stof(center[0]), stof(center[1]) };
 	float radius = stof(params[1]);
 
-	auto shape_ptr = make_shared<CircleShape>(radius);
-	shape_ptr->setPosition(pointCenter.x, pointCenter.y);
-	m_shapesList.push_back(shape_ptr);
+	//приводим к вектору SFML
+	Vector2f pointCenter = { stof(center[0]), stof(center[1]) };
 
-	CCircle circle(*shape_ptr);
-	m_output << "Circle: P = " << circle.GetPerimeter() << ", S = " << circle.GetArea() << endl;
+	//создаем фигуру SFML, устанавливаем позицию
+	sf::CircleShape circle = sf::CircleShape(radius);
+	circle.setPosition(pointCenter);
+
+	//оборачиваем в CCircle и заносим в массив фигур
+	shared_ptr<CCircle> circle_ptr = make_shared<CCircle>(move(circle));
+	m_shapesList.push_back(circle_ptr);
+
+	//выводим в output информацию о площади и периметре
+	m_output << "Circle: P = " << circle_ptr->GetPerimeter() << ", S = " << circle_ptr->GetArea() << endl;
 }
 
-void CShapeHandler::GetTriangleData(istream& args)
+void CShapeHandler::GetTriangleData(istream& argsLine)
 {
-	string command;
-	vector<string> params, p1, p2, p3;
-	getline(args, command);
+	string args;
+	vector<string> points, p1, p2, p3;
+	getline(argsLine, args);
 
-	boost::algorithm::trim(command);
-	boost::split(params, command, boost::algorithm::is_any_of(" "));
+	//убираем лишние пробелы и сплитим по оставшимся
+	boost::algorithm::trim(args);
+	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	boost::split(p1, params[0], boost::algorithm::is_any_of(","));
-	boost::split(p2, params[1], boost::algorithm::is_any_of(","));
-	boost::split(p3, params[2], boost::algorithm::is_any_of(","));
+	//сплитим по запятой, создаем векторы p1, p2, p3 для точек
+	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
+	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
+	boost::split(p3, points[2], boost::algorithm::is_any_of(","));
 
+	//приводим к векторам из SFML
 	Vector2f vertex1 = { stof(p1[0]), stof(p1[1]) };
 	Vector2f vertex2 = { stof(p2[0]), stof(p2[1]) };
 	Vector2f vertex3 = { stof(p3[0]), stof(p3[1]) };
 
-	auto shape_ptr = make_shared<ConvexShape>(3);
-	shape_ptr->setPoint(0, vertex1);
-	shape_ptr->setPoint(1, vertex2);
-	shape_ptr->setPoint(2, vertex3);
-	m_shapesList.push_back(shape_ptr);
+	//создаем фигуру SFML, устанавливаем позиции точек
+	ConvexShape triangle = ConvexShape(3);
+	triangle.setPoint(0, vertex1);
+	triangle.setPoint(1, vertex2);
+	triangle.setPoint(2, vertex3);
 
-	CTriangle triangle(*shape_ptr);
-	m_output << "Triangle: P = " << triangle.GetPerimeter() << ", S = " << triangle.GetArea() << endl;
+	//оборачиваем в CTriangle и заносим в массив фигур
+	shared_ptr<CTriangle> tri_ptr = make_shared<CTriangle>(move(triangle));
+	m_shapesList.push_back(tri_ptr);
+
+	//выводим в output информацию о площади и периметре
+	m_output << "Triangle: P = " << tri_ptr->GetPerimeter() << ", S = " << tri_ptr->GetArea() << endl;
 }
 
 void CShapeHandler::DisplayShapes()const
 {
-	for (auto it = m_shapesList.begin(); it != m_shapesList.end(); it++)
+	RenderWindow window(sf::VideoMode(800, 600), "Shapes");
+	while (window.isOpen())
 	{
-		RenderWindow window(sf::VideoMode(200, 200), "Shape");
-		(*it)->setFillColor(Color::Cyan);
-		while (window.isOpen())
+		sf::Event event;
+		while (window.pollEvent(event))
 		{
-			sf::Event event;
-			while (window.pollEvent(event))
-			{
-				if (event.type == sf::Event::Closed)
-					window.close();
-			};
-			window.draw(**it);
-			window.display();
+			if (event.type == sf::Event::Closed)
+				window.close();
+		};
+		for (auto it = m_shapesList.begin(); it != m_shapesList.end(); it++)
+		{
+			window.draw((*it)->GetSFShape());
 		}
+		window.display();
 	}
 }

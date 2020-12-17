@@ -5,22 +5,26 @@
 
 class CCircle : public IShape
 {
-public:
-	CCircle(CircleShape& circle)
-		:m_circle(circle)
-	{
-	}
+	private:
+		CircleShape m_circle;
+	public:
+		CCircle(CircleShape&& circle)
+			:m_circle(std::move(circle))
+		{
+		}
 
-	double GetPerimeter()const override 
-	{ 
-		return 2 * m_circle.getRadius() * M_PI;
-	}
+		double GetPerimeter()const override 
+		{ 
+			return 2 * static_cast<double>(m_circle.getRadius()) * M_PI;
+		}
 
-	double GetArea()const override
-	{ 
-		return pow(m_circle.getRadius(), 2) * M_PI;
-	}
+		double GetArea()const override
+		{ 
+			return pow(m_circle.getRadius(), 2) * M_PI;
+		}
 
-private:
-	CircleShape m_circle;
+		const Shape& GetSFShape()const override
+		{
+			return m_circle;
+		}
 };

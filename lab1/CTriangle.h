@@ -5,9 +5,11 @@
 
 class CTriangle : public IShape
 {
+	private:
+		ConvexShape m_triangle;
 	public:
-		CTriangle(ConvexShape& triangle)
-			: m_triangle(triangle)
+		CTriangle(ConvexShape&& triangle)
+			: m_triangle(std::move(triangle))
 		{
 		}
 
@@ -26,6 +28,8 @@ class CTriangle : public IShape
 				(halfPerimeter - GetSide(m_triangle.getPoint(0), m_triangle.getPoint(2))));
 		}
 
-	private:
-		ConvexShape m_triangle;
+		const Shape& GetSFShape()const override
+		{
+			return m_triangle;
+		}
 };

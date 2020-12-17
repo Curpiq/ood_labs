@@ -1,4 +1,4 @@
-Rectangle 15,35 40,55
-Rectangle 20,10 80,50
-Circle 60,60 50
-Triangle 0,0 60,80 60,20
+Triangle 5,30 60,100 60,20
+Rectangle 100,35 40,55
+Circle 60,90 50
+Rectangle 200,150 80,50

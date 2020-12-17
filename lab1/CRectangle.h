@@ -3,22 +3,26 @@
 
 class CRectange : public IShape
 {
+	private:
+		RectangleShape m_rectangle;
 	public:
-		CRectange(RectangleShape& rectangle)
-			: m_rectangle(rectangle)
+		CRectange(RectangleShape&& rectangle)
+			: m_rectangle(std::move(rectangle))
 		{
 		}
 
 		double GetPerimeter()const override
 		{
-			return (m_rectangle.getSize().x + m_rectangle.getSize().y) * 2;
+			return (static_cast<double>(m_rectangle.getSize().x) + m_rectangle.getSize().y) * 2;
 		}
 
 		double GetArea()const override
 		{
-			return (m_rectangle.getSize().x * m_rectangle.getSize().y);
+			return (static_cast<double>(m_rectangle.getSize().x) * m_rectangle.getSize().y);
 		}
 
-	private:
-		RectangleShape m_rectangle;
+		const Shape& GetSFShape()const override
+		{
+			return m_rectangle;
+		}
 };

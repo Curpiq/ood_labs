@@ -4,10 +4,14 @@
 class CShapeHandler
 {
 	public:
-		CShapeHandler(std::istream& input, std::ostream& output);
+		static CShapeHandler& GetInstance(std::istream& input, std::ostream& output);
 		void HandleCommand();
 		void DisplayShapes()const;
+		//запрещяем копирование и присваивание экземпляров
+		CShapeHandler(const CShapeHandler&) = delete;
+		CShapeHandler& operator=(const CShapeHandler&) = delete;
 	private:
+		CShapeHandler(std::istream& input, std::ostream& output);
 		void GetRectangleData(std::istream& args);
 		void GetCircleData(std::istream& args);
 		void GetTriangleData(std::istream& args);
@@ -18,5 +22,5 @@ class CShapeHandler
 		std::istream& m_input;
 		std::ostream& m_output;
 		const ActionMap m_actionMap;
-		std::vector<std::shared_ptr<Shape>> m_shapesList;
+		std::vector<std::shared_ptr<IShape>> m_shapesList;
 };
