@@ -43,11 +43,11 @@ void CShapeHandler::GetRectangleData(istream& argsLine)
 	boost::algorithm::trim(args);
 	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	//сплитим по запятой, создаем векторы p1, p2 для точек
+	//p1, p2 - контейнеры для вершин
 	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
 	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
 
-	//приводим к векторам из SFML
+	//преобразуем в векторы из либы SFML
 	sf::Vector2f leftTop = { stof(p1[0]), stof(p1[1]) };
 	sf::Vector2f rightBottom = { stof(p2[0]), stof(p2[1]) };
 
@@ -55,16 +55,16 @@ void CShapeHandler::GetRectangleData(istream& argsLine)
 	float width = sqrt(pow((rightBottom.x - leftTop.x), 2));
 	float height = sqrt(pow((leftTop.y - rightBottom.y), 2));
 
-	//создаем фигуру SFML, устанавливаем позицию
-	sf::RectangleShape rectangle = sf::RectangleShape(sf::Vector2f(width, height));
-	rectangle.setPosition(leftTop);
+	//создаем фигуру SFML, устанавливаем позицию и заносим в массив фигур
+	auto rect_ptr = make_shared<RectangleShape>(Vector2f(width, height));
+	rect_ptr->setPosition(leftTop);
+	m_shapes.push_back(rect_ptr);
 
-	//оборачиваем в CRectangle и заносим в массив фигур
-	shared_ptr<CRectange> rect_ptr = make_shared<CRectange>(move(rectangle));
-	m_shapesList.push_back(rect_ptr);
+	//декорируем обёрткой CRectangle
+	CRectange rect = CRectange(move(*rect_ptr));
 
 	//выводим в output информацию о площади и периметре
-	m_output << "Rectangle: P = " << rect_ptr->GetPerimeter() << ", S = " << rect_ptr->GetArea() << endl;
+	m_output << "Rectangle: P = " << rect.GetPerimeter() << ", S = " << rect.GetArea() << endl;
 }
 
 void CShapeHandler::GetCircleData(istream& argsLine)
@@ -77,23 +77,24 @@ void CShapeHandler::GetCircleData(istream& argsLine)
 	boost::algorithm::trim(args);
 	boost::split(params, args, boost::algorithm::is_any_of(" "));
 
-	//сплитим по запятой, создаем вектор center (точка центра), заводим переменную радиуса
+	//center - контейнер для точки центра
 	boost::split(center, params[0], boost::algorithm::is_any_of(","));
+
 	float radius = stof(params[1]);
 
-	//приводим к вектору SFML
+	//преобразуем в вектор из либы SFML
 	Vector2f pointCenter = { stof(center[0]), stof(center[1]) };
 
-	//создаем фигуру SFML, устанавливаем позицию
-	sf::CircleShape circle = sf::CircleShape(radius);
-	circle.setPosition(pointCenter);
+	//создаем фигуру SFML, устанавливаем позицию заносим в массив фигур
+	auto circle_ptr = make_shared<CircleShape>(radius);
+	circle_ptr->setPosition(pointCenter);
+	m_shapes.push_back(circle_ptr);
 
-	//оборачиваем в CCircle и заносим в массив фигур
-	shared_ptr<CCircle> circle_ptr = make_shared<CCircle>(move(circle));
-	m_shapesList.push_back(circle_ptr);
+	//декорируем обёрткой CCircle
+	CCircle circle = CCircle(move(*circle_ptr));
 
 	//выводим в output информацию о площади и периметре
-	m_output << "Circle: P = " << circle_ptr->GetPerimeter() << ", S = " << circle_ptr->GetArea() << endl;
+	m_output << "Circle: P = " << circle.GetPerimeter() << ", S = " << circle.GetArea() << endl;
 }
 
 void CShapeHandler::GetTriangleData(istream& argsLine)
@@ -106,45 +107,33 @@ void CShapeHandler::GetTriangleData(istream& argsLine)
 	boost::algorithm::trim(args);
 	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	//сплитим по запятой, создаем векторы p1, p2, p3 для точек
+	//p1, p2, p3 - контейнеры для вершин
 	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
 	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
 	boost::split(p3, points[2], boost::algorithm::is_any_of(","));
 
-	//приводим к векторам из SFML
+	//преобразуем в векторы из либы SFML
 	Vector2f vertex1 = { stof(p1[0]), stof(p1[1]) };
 	Vector2f vertex2 = { stof(p2[0]), stof(p2[1]) };
 	Vector2f vertex3 = { stof(p3[0]), stof(p3[1]) };
 
-	//создаем фигуру SFML, устанавливаем позиции точек
-	ConvexShape triangle = ConvexShape(3);
-	triangle.setPoint(0, vertex1);
-	triangle.setPoint(1, vertex2);
-	triangle.setPoint(2, vertex3);
+	//создаем фигуру SFML, устанавливаем позиции точек, заносим в массив
+	auto tri_ptr = make_shared<ConvexShape>(3);
+	tri_ptr->setPoint(0, vertex1);
+	tri_ptr->setPoint(1, vertex2);
+	tri_ptr->setPoint(2, vertex3);
+	m_shapes.push_back(tri_ptr);
 
-	//оборачиваем в CTriangle и заносим в массив фигур
-	shared_ptr<CTriangle> tri_ptr = make_shared<CTriangle>(move(triangle));
-	m_shapesList.push_back(tri_ptr);
+	//декорируем обёрткой CTriangle
+	CTriangle triangle = CTriangle(move(*tri_ptr));
 
 	//выводим в output информацию о площади и периметре
-	m_output << "Triangle: P = " << tri_ptr->GetPerimeter() << ", S = " << tri_ptr->GetArea() << endl;
+	m_output << "Triangle: P = " << triangle.GetPerimeter() << ", S = " << triangle.GetArea() << endl;
 }
 
-void CShapeHandler::DisplayShapes()const
+const std::vector<std::shared_ptr<sf::Shape>>& CShapeHandler::GetShapesList()const
 {
-	RenderWindow window(sf::VideoMode(800, 600), "Shapes");
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		};
-		for (auto it = m_shapesList.begin(); it != m_shapesList.end(); it++)
-		{
-			window.draw((*it)->GetSFShape());
-		}
-		window.display();
-	}
+	return m_shapes;
 }
+
+

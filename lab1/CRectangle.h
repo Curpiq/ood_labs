@@ -20,9 +20,4 @@ class CRectange : public IShape
 		{
 			return (static_cast<double>(m_rectangle.getSize().x) * m_rectangle.getSize().y);
 		}
-
-		const Shape& GetSFShape()const override
-		{
-			return m_rectangle;
-		}
 };

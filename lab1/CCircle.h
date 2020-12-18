@@ -22,9 +22,4 @@ class CCircle : public IShape
 		{ 
 			return pow(m_circle.getRadius(), 2) * M_PI;
 		}
-
-		const Shape& GetSFShape()const override
-		{
-			return m_circle;
-		}
 };

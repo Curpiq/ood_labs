@@ -1,6 +1,6 @@
 #pragma once
 #include "IShape.h"
-#include "GetSide.h"
+#include "GetDistance.h"
 #include <iostream>
 
 class CTriangle : public IShape
@@ -15,21 +15,16 @@ class CTriangle : public IShape
 
 		double GetPerimeter()const override
 		{
-			return GetSide(m_triangle.getPoint(0), m_triangle.getPoint(1)) +
-				GetSide(m_triangle.getPoint(1), m_triangle.getPoint(2)) +
-				GetSide(m_triangle.getPoint(0), m_triangle.getPoint(2));
+			return GetDistance(m_triangle.getPoint(0), m_triangle.getPoint(1)) +
+				GetDistance(m_triangle.getPoint(1), m_triangle.getPoint(2)) +
+				GetDistance(m_triangle.getPoint(0), m_triangle.getPoint(2));
 		}
 
 		double GetArea()const override
 		{
 			double halfPerimeter = GetPerimeter() / 2;
-			return sqrt(halfPerimeter * (halfPerimeter - GetSide(m_triangle.getPoint(0), m_triangle.getPoint(1))) *
-				(halfPerimeter - GetSide(m_triangle.getPoint(1), m_triangle.getPoint(2))) *
-				(halfPerimeter - GetSide(m_triangle.getPoint(0), m_triangle.getPoint(2))));
-		}
-
-		const Shape& GetSFShape()const override
-		{
-			return m_triangle;
+			return sqrt(halfPerimeter * (halfPerimeter - GetDistance(m_triangle.getPoint(0), m_triangle.getPoint(1))) *
+				(halfPerimeter - GetDistance(m_triangle.getPoint(1), m_triangle.getPoint(2))) *
+				(halfPerimeter - GetDistance(m_triangle.getPoint(0), m_triangle.getPoint(2))));
 		}
 };

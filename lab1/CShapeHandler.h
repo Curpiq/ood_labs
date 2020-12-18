@@ -6,7 +6,7 @@ class CShapeHandler
 	public:
 		static CShapeHandler& GetInstance(std::istream& input, std::ostream& output);
 		void HandleCommand();
-		void DisplayShapes()const;
+		const std::vector<std::shared_ptr<sf::Shape>>& GetShapesList()const;
 		//запрещяем копирование и присваивание экземпляров
 		CShapeHandler(const CShapeHandler&) = delete;
 		CShapeHandler& operator=(const CShapeHandler&) = delete;
@@ -22,5 +22,5 @@ class CShapeHandler
 		std::istream& m_input;
 		std::ostream& m_output;
 		const ActionMap m_actionMap;
-		std::vector<std::shared_ptr<IShape>> m_shapesList;
+		std::vector<std::shared_ptr<sf::Shape>> m_shapes;
 };

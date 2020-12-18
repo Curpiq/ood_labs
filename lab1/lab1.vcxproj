@@ -160,7 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CShapeHandler.cpp" />
-    <ClCompile Include="GetSide.cpp" />
+    <ClCompile Include="GetDistance.cpp" />
     <ClCompile Include="lab1.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,7 +169,7 @@
     <ClInclude Include="CRectangle.h" />
     <ClInclude Include="CTriangle.h" />
     <ClInclude Include="DisplayShape.h" />
-    <ClInclude Include="GetSide.h" />
+    <ClInclude Include="GetDistance.h" />
     <ClInclude Include="IShape.h" />
     <ClInclude Include="CShapeHandler.h" />
     <ClInclude Include="stdafx.h" />
