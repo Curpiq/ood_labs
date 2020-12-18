@@ -18,9 +18,9 @@ public:
 	CircleCreator(const CircleCreator&) = delete;
 	CircleCreator& operator=(const CircleCreator&) = delete;
 
-	std::shared_ptr<IShape> CreateShape(sf::CircleShape&& circle)const
+	std::shared_ptr<IShape> CreateShape(sf::Vector2f center, float radius)const
 	{
-		auto rect = std::make_shared<Circle>(std::move(circle));
-		return rect;
+		auto circle_ptr = std::make_shared<Circle>(center, radius);
+		return circle_ptr;
 	}
 };

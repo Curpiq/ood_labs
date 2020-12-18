@@ -9,10 +9,15 @@ class Circle : public IShape
 {
 private:
 	sf::CircleShape m_circle;
+	sf::Vector2f m_center;
+	float m_radius;
 public:
-	Circle(sf::CircleShape&& circle)
-		:m_circle(circle)
+	Circle(sf::Vector2f center, float radius)
+		:m_center(center)
+		, m_radius(radius)
 	{
+		m_circle = sf::CircleShape(radius);
+		m_circle.setPosition(center);
 	}
 
 	double GetPerimeter()const override
