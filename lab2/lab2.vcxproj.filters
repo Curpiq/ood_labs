@@ -21,7 +21,7 @@
     <ClCompile Include="ShapeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="GetSide.cpp">
+    <ClCompile Include="GetDistance.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,10 +56,10 @@
     <ClInclude Include="Triangle.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="GetSide.h">
+    <ClInclude Include="TriangleCreator.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="TriangleCreator.h">
+    <ClInclude Include="GetDistance.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

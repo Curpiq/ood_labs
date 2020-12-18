@@ -1,8 +1,5 @@
 #pragma once
-#include <sstream>
-#include <map>
-#include <functional>
-#include <vector>
+#include "stdfx.h"
 #include "IShape.h"
 
 class ShapeHandler
@@ -15,7 +12,7 @@ public:
 	static ShapeHandler& GetInstance(std::istream& input, std::ostream& output);
 
 	void HandleCommand();
-	void DisplayShapes()const;
+	const std::vector<std::shared_ptr<IShape>>& GetShapesList()const;
 
 private:
 	//приватный конструктор запрашивает создание экземпляра в обход GetInstance()
@@ -31,5 +28,5 @@ private:
 	std::istream& m_input;
 	std::ostream& m_output;
 	const ActionMap m_actionMap;
-	std::vector<std::shared_ptr<IShape>> shapes;
+	std::vector<std::shared_ptr<IShape>> m_shapes;
 };

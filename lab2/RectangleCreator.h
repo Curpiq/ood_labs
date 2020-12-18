@@ -19,9 +19,9 @@ public:
 	RectangleCreator(const RectangleCreator&) = delete;
 	RectangleCreator& operator=(const RectangleCreator&) = delete;
 
-	std::shared_ptr<IShape> CreateShape(sf::RectangleShape&& rectangle)const
+	std::shared_ptr<IShape> CreateShape(sf::Vector2f leftTop, sf::Vector2f rightBottom)const
 	{
-		auto rect = std::make_shared<Rectangle>(std::move(rectangle));
+		auto rect = std::make_shared<Rectangle>(leftTop, rightBottom);
 		return rect;
 	}
 };

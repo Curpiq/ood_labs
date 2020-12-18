@@ -145,7 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GetSide.cpp" />
+    <ClCompile Include="GetDistance.cpp" />
     <ClCompile Include="lab2.cpp" />
     <ClCompile Include="ShapeHandler.cpp" />
   </ItemGroup>
@@ -155,7 +155,7 @@
   <ItemGroup>
     <ClInclude Include="Circle.h" />
     <ClInclude Include="CircleCreator.h" />
-    <ClInclude Include="GetSide.h" />
+    <ClInclude Include="GetDistance.h" />
     <ClInclude Include="IShape.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="RectangleCreator.h" />
