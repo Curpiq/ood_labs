@@ -1,23 +1,24 @@
 #pragma once
-#pragma once
+
 #include "stdfx.h"
-#include "IShape.h"
+#include "ShapeCreators.h"
+#include "StreamOutputVisitor.h"
 
 class ShapeHandler
 {
 public:
-	//запрещяем копирование и присваивание экземпляров
+	//Р·Р°РїСЂРµС‰СЏРµРј РєРѕРїРёСЂРѕРІР°РЅРёРµ Рё РїСЂРёСЃРІР°РёРІР°РЅРёРµ СЌРєР·РµРјРїР»СЏСЂРѕРІ
 	ShapeHandler(const ShapeHandler&) = delete;
 	ShapeHandler& operator=(const ShapeHandler&) = delete;
 
-	static ShapeHandler& GetInstance(std::istream& input);
+	static ShapeHandler& GetInstance(std::istream& input, StreamOutputVisitor& visitor);
 
 	void HandleCommand();
 
-	const std::vector<std::shared_ptr<IShape>>& GetShapesList()const;
+	const std::vector<std::shared_ptr<sf::Shape>>& GetShapesList()const;
 private:
-	//приватный конструктор запрашивает создание экземпляра в обход GetInstance()
-	ShapeHandler(std::istream& input);
+	//РїСЂРёРІР°С‚РЅС‹Р№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Р·Р°РїСЂР°С€РёРІР°РµС‚ СЃРѕР·РґР°РЅРёРµ СЌРєР·РµРјРїР»СЏСЂР° РІ РѕР±С…РѕРґ GetInstance()
+	ShapeHandler(std::istream& input, StreamOutputVisitor& visitor);
 
 	void GetRectangleData(std::istream& args);
 	void GetCircleData(std::istream& args);
@@ -27,6 +28,7 @@ private:
 	using ActionMap = std::map<std::string, Handler>;
 
 	std::istream& m_input;
+	StreamOutputVisitor& m_visitor;
 	const ActionMap m_actionMap;
-	std::vector<std::shared_ptr<IShape>> m_shapes;
+	std::vector<std::shared_ptr<sf::Shape>> m_shapes;
 };

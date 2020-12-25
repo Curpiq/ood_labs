@@ -1,6 +1,8 @@
 #pragma once
-#include <memory>
-#include "Shapes.h"
+
+class Circle;
+class Rectangle;
+class Triangle;
 
 class IShapeVisitor
 {

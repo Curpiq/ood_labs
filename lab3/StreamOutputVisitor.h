@@ -1,9 +1,8 @@
 #pragma once
+
 #include "IShapeVisitor.h"
 #include <iostream>
-#include "Circle.h"
-#include "Rectangle.h"
-#include "Triangle.h"
+#include "Shapes.h"
 
 class StreamOutputVisitor : public IShapeVisitor
 {
@@ -22,7 +21,7 @@ public:
 	{
 		m_output << "Rectangle: P = " << rectangle.GetPerimeter() << ", S = " << rectangle.GetArea() << std::endl;
 	}
-	
+
 	void Visit(Triangle const& triangle)const override
 	{
 		m_output << "Triangle: P = " << triangle.GetPerimeter() << ", S = " << triangle.GetArea() << std::endl;

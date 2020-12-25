@@ -1,4 +1,7 @@
 #pragma once
+
+#include <memory>
+#include "SFML/Graphics.hpp"
 #include "Circle.h"
 
 class CircleCreator
@@ -18,9 +21,17 @@ public:
 	CircleCreator(const CircleCreator&) = delete;
 	CircleCreator& operator=(const CircleCreator&) = delete;
 
-	std::shared_ptr<IShape> CreateShape(sf::Vector2f center, float radius)const
+	std::shared_ptr <IShape> CreateShape(sf::CircleShape& circle)
 	{
-		auto circle_ptr = std::make_shared<Circle>(center, radius);
-		return circle_ptr;
+		double radius = circle.getRadius();
+		sf::Vector2f center = circle.getPosition();
+
+		auto shape = FactoryMethod(center, radius);
+		return shape;
+	}
+	std::shared_ptr<IShape> FactoryMethod(sf::Vector2f center, double radius)const
+	{
+		auto rect = std::make_shared<Circle>(center, radius);
+		return rect;
 	}
 };

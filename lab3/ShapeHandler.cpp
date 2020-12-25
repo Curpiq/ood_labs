@@ -1,25 +1,22 @@
-#include "ShapeHandler.h"
 #include <boost/algorithm/string.hpp>
-
-#include "Creators.h"
+#include "ShapeHandler.h"
 
 using namespace std;
 using namespace std::placeholders;
 
-
-ShapeHandler::ShapeHandler(istream& input)
+ShapeHandler::ShapeHandler(istream& input, StreamOutputVisitor& visitor)
 	: m_input(input)
-	, m_actionMap({
-	{ "Rectangle", bind(&ShapeHandler::GetRectangleData, this, _1) },
-	{ "Circle", bind(&ShapeHandler::GetCircleData, this, _1) },
-	{ "Triangle", bind(&ShapeHandler::GetTriangleData, this, _1) }
+	, m_visitor(visitor)
+	, m_actionMap({ { "Rectangle", bind(&ShapeHandler::GetRectangleData, this, _1)} ,
+		{ "Circle", bind(&ShapeHandler::GetCircleData, this, _1) },
+		{ "Triangle", bind(&ShapeHandler::GetTriangleData, this, _1) }
 		})
 {
 }
 
-ShapeHandler& ShapeHandler::GetInstance(std::istream& input)
+ShapeHandler& ShapeHandler::GetInstance(istream& input, StreamOutputVisitor& visitor)
 {
-	static ShapeHandler instance(input);
+	static ShapeHandler instance(input, visitor);
 	return instance;
 }
 
@@ -43,24 +40,29 @@ void ShapeHandler::GetRectangleData(istream& argsLine)
 	vector<string> points, p1, p2;
 	getline(argsLine, args);
 
-	//убираем лишние пробелы и сплитим по оставшимс€
+	//???????????? ?????? ?????
 	boost::algorithm::trim(args);
 	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	//p1, p2 - контейнеры дл€ вершин
+	//p1, p2 - ????? ?? ???
 	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
 	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
 
-	//преобразуем в векторы из либы SFML
+	
 	sf::Vector2f leftTop = { stof(p1[0]), stof(p1[1]) };
 	sf::Vector2f rightBottom = { stof(p2[0]), stof(p2[1]) };
 
-	//получаем экзепл€р класса RectangleCreator
+
+	float width = sqrt(pow((rightBottom.x - leftTop.x), 2));
+	float height = sqrt(pow((leftTop.y - rightBottom.y), 2));
+
+	auto rect_ptr = make_shared<sf::RectangleShape>(sf::Vector2f(width, height));
+	rect_ptr->setPosition(leftTop);
+	m_shapes.push_back(rect_ptr);
 	auto& rectCreator = RectangleCreator::GetInstance();
 
-	//создаем экзепл€р класса Rectangle с помощью RectangleCreator, заносим в массив фигур
-	std::shared_ptr<IShape> rect_ptr = rectCreator.CreateShape(leftTop, rightBottom);
-	m_shapes.push_back(rect_ptr);
+	auto rectangle = rectCreator.CreateShape(*rect_ptr);
+	rectangle->PrintInfo(m_visitor);
 }
 
 void ShapeHandler::GetCircleData(istream& argsLine)
@@ -69,24 +71,28 @@ void ShapeHandler::GetCircleData(istream& argsLine)
 	vector<string> params, center;
 	getline(argsLine, args);
 
-	//убираем лишние пробелы и сплитим по оставшимс€
+
 	boost::algorithm::trim(args);
 	boost::split(params, args, boost::algorithm::is_any_of(" "));
 
-	//center - контейнер дл€ точки центра
 	boost::split(center, params[0], boost::algorithm::is_any_of(","));
 
 	float radius = stof(params[1]);
 
-	//преобразуем в вектор из либы SFML
 	sf::Vector2f pointCenter = { stof(center[0]), stof(center[1]) };
 
-	//получаем экзепл€р класса CicleCreator
+	
+	auto circle_ptr = make_shared<sf::CircleShape>(radius);
+	circle_ptr->setPosition(pointCenter);
+	m_shapes.push_back(circle_ptr);
+
+	
 	auto& circleCreator = CircleCreator::GetInstance();
 
-	//создаем экземпл€р класса Circle с помощью CircleCreator, заносим в массив фигур
-	std::shared_ptr<IShape> circle_ptr = circleCreator.CreateShape(pointCenter, radius);
-	m_shapes.push_back(circle_ptr);
+	auto circle = circleCreator.CreateShape(*circle_ptr);
+
+	
+	circle->PrintInfo(m_visitor);
 }
 
 void ShapeHandler::GetTriangleData(istream& argsLine)
@@ -95,29 +101,35 @@ void ShapeHandler::GetTriangleData(istream& argsLine)
 	vector<string> points, p1, p2, p3;
 	getline(argsLine, args);
 
-	//убираем лишние пробелы и сплитим по оставшимс€
 	boost::algorithm::trim(args);
 	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	//p1, p2, p3 - контейнеры дл€ вершин
+	
 	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
 	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
 	boost::split(p3, points[2], boost::algorithm::is_any_of(","));
 
-	//преобразуем в векторы из либы SFML
+	
 	sf::Vector2f vertex1 = { stof(p1[0]), stof(p1[1]) };
 	sf::Vector2f vertex2 = { stof(p2[0]), stof(p2[1]) };
 	sf::Vector2f vertex3 = { stof(p3[0]), stof(p3[1]) };
 
-	//получаем экзепл€р класса TriangleCreator
-	auto& triCreator = TriangleCreator::GetInstance();
+	
+	auto tri_ptr = std::make_shared<sf::ConvexShape>(3);
+	tri_ptr->setPoint(0, vertex1);
+	tri_ptr->setPoint(1, vertex2);
+	tri_ptr->setPoint(2, vertex3);
+	m_shapes.push_back(tri_ptr);
 
-	//создаем экземпл€р класса Circle с помощью TriangleCreator, заносим в массив фигур
-	std::shared_ptr<IShape> triangle_ptr = triCreator.CreateShape(vertex1, vertex2, vertex3);
-	m_shapes.push_back(triangle_ptr);
+	
+	auto& triangleCreator = TriangleCreator::GetInstance();
+
+	auto triangle = triangleCreator.CreateShape(*tri_ptr);
+
+	
+	triangle->PrintInfo(m_visitor);
 }
-
-const std::vector<std::shared_ptr<IShape>>& ShapeHandler::GetShapesList()const
+const std::vector<std::shared_ptr<sf::Shape>>& ShapeHandler::GetShapesList()const
 {
 	return m_shapes;
 }
