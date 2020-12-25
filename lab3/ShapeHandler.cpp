@@ -40,11 +40,9 @@ void ShapeHandler::GetRectangleData(istream& argsLine)
 	vector<string> points, p1, p2;
 	getline(argsLine, args);
 
-	//???????????? ?????? ?????
 	boost::algorithm::trim(args);
 	boost::split(points, args, boost::algorithm::is_any_of(" "));
 
-	//p1, p2 - ????? ?? ???
 	boost::split(p1, points[0], boost::algorithm::is_any_of(","));
 	boost::split(p2, points[1], boost::algorithm::is_any_of(","));
 
