@@ -1,6 +1,8 @@
 #include "ShapeHandler.h"
 #include <boost/algorithm/string.hpp>
-#include "ShapeCreators.h"
+#include "RectangleCreator.h"
+#include "CircleCreator.h"
+#include "TriangleCreator.h"
 
 using namespace std;
 using namespace std::placeholders;
@@ -8,10 +10,9 @@ using namespace std::placeholders;
 ShapeHandler::ShapeHandler(istream& input, ostream& output)
 	: m_input(input)
 	, m_output(output)
-	, m_actionMap({
-				{ "Rectangle", bind(&ShapeHandler::GetRectangleData, this, _1) },
-				{ "Circle", bind(&ShapeHandler::GetCircleData, this, _1) },
-				{ "Triangle", bind(&ShapeHandler::GetTriangleData, this, _1) }
+	, m_actionMap({ { "Rectangle", bind(&ShapeHandler::GetRectangleData, this, _1)} ,
+		{ "Circle", bind(&ShapeHandler::GetCircleData, this, _1) },
+		{ "Triangle", bind(&ShapeHandler::GetTriangleData, this, _1) }
 		})
 {
 }
@@ -54,14 +55,21 @@ void ShapeHandler::GetRectangleData(istream& argsLine)
 	sf::Vector2f leftTop = { stof(p1[0]), stof(p1[1]) };
 	sf::Vector2f rightBottom = { stof(p2[0]), stof(p2[1]) };
 
-	//получаем экзепляр класса RectangleCreator
-	auto& rectCreator = RectangleCreator::GetInstance();
 
-	//создаем экзепляр класса Rectangle с помощью RectangleCreator, заносим в массив фигур
-	shared_ptr<IShape> rect_ptr = rectCreator.CreateShape(leftTop, rightBottom);
+	//рассчитываем ширину и высоту для создания объекта класса RectangleShape из SFML
+	float width = sqrt(pow((rightBottom.x - leftTop.x), 2));
+	float height = sqrt(pow((leftTop.y - rightBottom.y), 2));
+
+	//создаем фигуру SFML, устанавливаем позицию и заносим в массив фигур
+	auto rect_ptr = make_shared<sf::RectangleShape>(sf::Vector2f(width, height));
+	rect_ptr->setPosition(leftTop);
 	m_shapes.push_back(rect_ptr);
 
-	m_output << "Rectangle: P = " << rect_ptr->GetPerimeter() << ", S = " << rect_ptr->GetArea() << endl;
+	//получаем экзепляр класса RectangleCreator
+	auto& rectCreator = RectangleCreator::GetInstance();
+	
+	auto rectangle = rectCreator.CreateShape(*rect_ptr);
+	m_output << "Rectangle: S= " << rectangle->GetArea() << ", P = " << rectangle->GetPerimeter() << endl;
 }
 
 void ShapeHandler::GetCircleData(istream& argsLine)
@@ -82,14 +90,18 @@ void ShapeHandler::GetCircleData(istream& argsLine)
 	//преобразуем в вектор из либы SFML
 	sf::Vector2f pointCenter = { stof(center[0]), stof(center[1]) };
 
-	//получаем экзепляр класса CicleCreator
-	auto& circleCreator = CircleCreator::GetInstance();
-
-	//создаем экземпляр класса Circle с помощью CircleCreator, заносим в массив фигур
-	std::shared_ptr<IShape> circle_ptr = circleCreator.CreateShape(pointCenter, radius);
+	//создаем фигуру SFML, устанавливаем позицию заносим в массив фигур
+	auto circle_ptr = make_shared<sf::CircleShape>(radius);
+	circle_ptr->setPosition(pointCenter);
 	m_shapes.push_back(circle_ptr);
 
-	m_output << "Circle: P = " << circle_ptr->GetPerimeter() << ", S = " << circle_ptr->GetArea() << endl;
+	//получаем экзепляр класса circleCreator
+	auto& circleCreator = CircleCreator::GetInstance();
+
+	auto circle = circleCreator.CreateShape(*circle_ptr);
+
+	//выводим в output информацию о площади и периметре
+	m_output << "Circle: S= " << circle->GetArea() << ", P = " << circle->GetPerimeter() << endl;
 }
 
 void ShapeHandler::GetTriangleData(istream& argsLine)
@@ -112,17 +124,22 @@ void ShapeHandler::GetTriangleData(istream& argsLine)
 	sf::Vector2f vertex2 = { stof(p2[0]), stof(p2[1]) };
 	sf::Vector2f vertex3 = { stof(p3[0]), stof(p3[1]) };
 
-	//получаем экзепляр класса TriangleCreator
-	auto& triCreator =TriangleCreator::GetInstance();
+	//создаем фигуру SFML, устанавливаем позиции точек, заносим в массив
+	auto tri_ptr = std::make_shared<sf::ConvexShape>(3);
+	tri_ptr->setPoint(0, vertex1);
+	tri_ptr->setPoint(1, vertex2);
+	tri_ptr->setPoint(2, vertex3);
+	m_shapes.push_back(tri_ptr);
 
-	//создаем экземпляр класса Circle с помощью TriangleCreator, заносим в массив фигур
-	std::shared_ptr<IShape> triangle_ptr = triCreator.CreateShape(vertex1, vertex2, vertex3);
-	m_shapes.push_back(triangle_ptr);
+	//получаем экзепляр класса triangleCreator
+	auto& triangleCreator = TriangleCreator::GetInstance();
 
-	m_output << "Triangle: P = " << triangle_ptr->GetPerimeter() << ", S = " << triangle_ptr->GetArea() << endl;
+	auto triangle = triangleCreator.CreateShape(*tri_ptr);
+
+	//выводим в output информацию о площади и периметре
+	m_output << "Triangle: S= " << triangle->GetArea() << ", P = " << triangle->GetPerimeter() << std::endl;
 }
-
-const std::vector<std::shared_ptr<IShape>>& ShapeHandler::GetShapesList()const
+const std::vector<std::shared_ptr<sf::Shape>>& ShapeHandler::GetShapesList()const
 {
 	return m_shapes;
 }

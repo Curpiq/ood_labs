@@ -1,6 +1,7 @@
 #pragma once
-#include "stdfx.h"
 #include "IShape.h"
+#include "stdfx.h"
+#include <SFML/Graphics.hpp>
 
 class ShapeHandler
 {
@@ -9,14 +10,14 @@ public:
 	ShapeHandler(const ShapeHandler&) = delete;
 	ShapeHandler& operator=(const ShapeHandler&) = delete;
 
-	static ShapeHandler& GetInstance(std::istream& input, std::ostream& output);
+	static ShapeHandler& GetInstance(std::istream& input, std::ostream& outnput);
 
 	void HandleCommand();
-	const std::vector<std::shared_ptr<IShape>>& GetShapesList()const;
 
+	const std::vector<std::shared_ptr<sf::Shape>>& GetShapesList()const;
 private:
 	//приватный конструктор запрашивает создание экземпляра в обход GetInstance()
-	ShapeHandler(std::istream& input, std::ostream& output);
+	ShapeHandler(std::istream& input, std::ostream& pnput);
 
 	void GetRectangleData(std::istream& args);
 	void GetCircleData(std::istream& args);
@@ -28,5 +29,5 @@ private:
 	std::istream& m_input;
 	std::ostream& m_output;
 	const ActionMap m_actionMap;
-	std::vector<std::shared_ptr<IShape>> m_shapes;
+	std::vector<std::shared_ptr<sf::Shape>> m_shapes;
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include "SFML/Graphics.hpp"
 #include "Rectangle.h"
 
 class RectangleCreator
@@ -19,9 +21,18 @@ public:
 	RectangleCreator(const RectangleCreator&) = delete;
 	RectangleCreator& operator=(const RectangleCreator&) = delete;
 
-	std::shared_ptr<IShape> CreateShape(sf::Vector2f leftTop, sf::Vector2f rightBottom)const
+	std::shared_ptr <IShape> CreateShape(sf::RectangleShape& rectangle)
 	{
-		auto rect = std::make_shared<Rectangle>(leftTop, rightBottom);
+		double width = rectangle.getSize().x;
+		double height = rectangle.getSize().y;
+
+		auto rect = FactoryMethod(width, height);
+		return rect;
+	}
+
+	std::shared_ptr<IShape> FactoryMethod(double width, double height)const
+	{
+		auto rect = std::make_shared<Rectangle>(width, height);
 		return rect;
 	}
 };
