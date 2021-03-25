@@ -165,7 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCircle.h" />
-    <ClInclude Include="CPoint.h" />
     <ClInclude Include="CRectangle.h" />
     <ClInclude Include="CTriangle.h" />
     <ClInclude Include="DisplayShape.h" />
